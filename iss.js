@@ -11,7 +11,7 @@ const fetchMyIP = function(callback) {
     }
 
     const ip = JSON.parse(body).ip; //just to get the value
-  callback(null, ip);
+    callback(null, ip);
   });
 };
 
@@ -33,4 +33,22 @@ const fetchCoordsByIP = function(ip, callback) {
   });
 };
 
-module.exports = { fetchMyIP, fetchCoordsByIP };
+const fetchISSFlyOverTimes = function(coords, callback) {
+  request(`https://iss-flyover.herokuapp.com/json/?lat=${coords.latitude}&lon=${coords.longitude}`, (error, response, body) => {
+    if (error) {
+      callback(error, null);
+      return;
+    }
+
+    const returned = JSON.parse(body);
+    if (returned === "invalid coordinates") {
+      callback(returned, null);
+      return;
+    }
+
+    const passes = returned.response;
+    callback(null, passes);
+  });
+};
+
+module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes };
